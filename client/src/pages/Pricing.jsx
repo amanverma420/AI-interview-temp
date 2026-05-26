@@ -72,9 +72,9 @@ function Pricing() {
         credits: plan.credits,
       },{withCredentials:true})
       
-
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_StzmFpCgllOVmg"
       const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      key: razorpayKey,
       amount: result.data.amount,
       currency: "INR",
       name: "InterviewIQ.AI",
