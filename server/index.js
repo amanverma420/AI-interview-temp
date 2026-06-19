@@ -14,11 +14,26 @@ import paymentRouter from "./routes/payment.route.js"
 const app = express()
 
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        process.env.FRONTEND_URL
-    ].filter(Boolean).map(url => url.trim().replace(/\/$/, "")),
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const cleanOrigin = origin.trim().replace(/\/$/, "");
+        const allowedOrigins = [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            process.env.FRONTEND_URL
+        ].filter(Boolean).map(url => url.trim().replace(/\/$/, ""));
+
+        if (allowedOrigins.includes(cleanOrigin)) {
+            return callback(null, true);
+        }
+
+        // Auto-whitelist Vercel preview/production domains starting with 'ai-interview-client'
+        if (cleanOrigin.startsWith("https://ai-interview-client") && cleanOrigin.endsWith(".vercel.app")) {
+            return callback(null, true);
+        }
+
+        return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true
 }))
 
