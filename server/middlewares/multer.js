@@ -2,7 +2,8 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
     destination: function(req, file , cb){
-        cb(null , "public")
+        const dest = process.env.VERCEL ? "/tmp" : "public";
+        cb(null , dest)
     },
     filename: function(req , file , cb){
         const filename = Date.now() + "-" + file.originalname;
