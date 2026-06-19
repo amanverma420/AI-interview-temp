@@ -33,11 +33,12 @@ export const googleAuth = async (req,res) => {
 
 export const logOut = async (req,res) => {
     try {
+        const isProduction = process.env.NODE_ENV === "production"
         res.clearCookie("token", {
-   httpOnly: true,
-   secure: true,
-   sameSite: "none"
-})
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax"
+        })
         return res.status(200).json({message:"LogOut Successfully"})
     } catch (error) {
          return res.status(500).json({message:`Logout error ${error}`})

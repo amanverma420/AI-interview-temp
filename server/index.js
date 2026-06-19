@@ -3,6 +3,8 @@ import dotenv from "dotenv"
 import connectDb from "./config/connectDb.js"
 import cookieParser from "cookie-parser"
 dotenv.config()
+connectDb() // Establish DB connection at startup
+
 import cors from "cors"
 import authRouter from "./routes/auth.route.js"
 import userRouter from "./routes/user.route.js"
@@ -14,8 +16,9 @@ const app = express()
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://ai-interview-git-main-amanverma420s-projects.vercel.app"
-    ],
+        "http://localhost:3000",
+        process.env.FRONTEND_URL
+    ].filter(Boolean),
     credentials: true
 }))
 
@@ -27,8 +30,13 @@ app.use("/api/user", userRouter)
 app.use("/api/interview" , interviewRouter)
 app.use("/api/payment" , paymentRouter)
 
-const PORT = process.env.PORT || 6000
-app.listen(PORT , ()=>{
-    console.log(`Server running on port ${PORT}`)
-    connectDb()
-})
+// Start express server only if not running inside a serverless handler (like Vercel)
+if (!process.env.VERCEL) {
+    const PORT = process.env.PORT || 6000
+    app.listen(PORT , ()=>{
+        console.log(`Server running on port ${PORT}`)
+    })
+}
+
+export default app
+
